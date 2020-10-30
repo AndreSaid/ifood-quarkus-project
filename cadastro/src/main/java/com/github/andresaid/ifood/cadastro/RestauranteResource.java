@@ -3,6 +3,7 @@ package com.github.andresaid.ifood.cadastro;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -19,6 +20,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import com.github.andresaid.ifood.cadastro.dto.AdicionarRestauranteDTO;
+import com.github.andresaid.ifood.cadastro.dto.RestauranteMapper;
+
 
 @Path("/restaurantes")
 @Produces(MediaType.APPLICATION_JSON)
@@ -26,15 +30,20 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name="Restaurante")
 public class RestauranteResource {
 
+	@Inject
+	RestauranteMapper restauranteMapper;
+	
+	
 	@GET
-	public List<Restaurante> buscar() {
+	public List<Restaurante> buscarRestaurantes() {
 		return Restaurante.listAll();
 	}
 	
 	@POST
 	@Transactional
-	public Response adicionar(Restaurante dto) {
-		dto.persist();
+	public Response adicionar(AdicionarRestauranteDTO dto) {
+		Restaurante restaurante = restauranteMapper.toRestaurante(dto);
+		restaurante.persist();
 		return Response.status(Status.CREATED).build();
 	}
 	
